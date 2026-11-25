@@ -345,6 +345,44 @@ Item {
     }
   }
 
+  // A wide, always-visible scroll handle that is easy to grab and drag (scrub).
+  component BigScrollBar: Controls.ScrollBar {
+    id: bar
+    policy: Controls.ScrollBar.AlwaysOn
+    minimumSize: 0.06
+    implicitWidth: Style.space(16)
+    padding: Style.space(2)
+    contentItem: Rectangle {
+      implicitWidth: Style.space(12)
+      radius: width / 2
+      color: bar.pressed ? root.accent
+        : bar.hovered ? Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.75)
+        : Qt.rgba(root.fg.r, root.fg.g, root.fg.b, 0.45)
+    }
+    background: Rectangle {
+      radius: width / 2
+      color: Qt.rgba(root.fg.r, root.fg.g, root.fg.b, 0.08)
+    }
+  }
+
+  // Jump to the first or last row of a list.
+  component JumpButtons: Row {
+    property var target: null
+    spacing: Style.space(2)
+    PanelActionButton {
+      iconText: "󰘣"
+      foreground: root.fg
+      tooltipText: root.t("rows.top")
+      onClicked: if (parent.target) parent.target.positionViewAtBeginning()
+    }
+    PanelActionButton {
+      iconText: "󰘡"
+      foreground: root.fg
+      tooltipText: root.t("rows.bottom")
+      onClicked: if (parent.target) parent.target.positionViewAtEnd()
+    }
+  }
+
   component MenuItem: MouseArea {
     id: item
     property string text: ""
@@ -451,6 +489,15 @@ Item {
       transform: Scale { xScale: root.fit; yScale: root.fit }
       focus: true
       Keys.onEscapePressed: { if (root.menuRow) root.menuRow = null; else root.close() }
+      Keys.onPressed: function(event) {
+        var target = root.tab === "history" ? backupRows : list
+        if (event.key === Qt.Key_Home) target.positionViewAtBeginning()
+        else if (event.key === Qt.Key_End) target.positionViewAtEnd()
+        else if (event.key === Qt.Key_PageDown) target.contentY = Math.min(target.contentHeight - target.height, target.contentY + target.height * 0.9)
+        else if (event.key === Qt.Key_PageUp) target.contentY = Math.max(0, target.contentY - target.height * 0.9)
+        else return
+        event.accepted = true
+      }
 
       // Click outside the context menu closes it.
       MouseArea {
@@ -693,6 +740,7 @@ Item {
               checked: root.onlySelected
               onToggled: root.onlySelected = !root.onlySelected
             }
+            JumpButtons { anchors.verticalCenter: parent.verticalCenter; target: list }
             Label { anchors.verticalCenter: parent.verticalCenter; color: root.dim; font.pixelSize: Style.font.caption
               text: strings.t("rows.count").arg(Commons.I18n.formatNumber(root.shownRows.length)) + "  ·  " + root.t("rows.legend") }
           }
@@ -704,7 +752,7 @@ Item {
             clip: true
             model: root.shownRows
             boundsBehavior: Flickable.StopAtBounds
-            Controls.ScrollBar.vertical: Controls.ScrollBar { policy: Controls.ScrollBar.AlwaysOn }
+            Controls.ScrollBar.vertical: BigScrollBar {}
             delegate: Column {
               required property var modelData
               width: list.width
@@ -849,8 +897,9 @@ Item {
             ListView {
               id: backupRows
               width: parent.width
-              height: Style.space(460)
+              height: Math.max(Style.space(120), body.height - backupRows.mapToItem(body, 0, 0).y)
               clip: true
+              Controls.ScrollBar.vertical: BigScrollBar {}
               model: root.backup ? root.backup.rows : []
               delegate: Row {
                 required property var modelData
