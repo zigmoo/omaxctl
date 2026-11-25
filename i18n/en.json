@@ -121,5 +121,12 @@
   "about.risk.title": "Be aware",
   "about.risk.body": "X's rules restrict automated activity. OmaXCtl keeps the pace slow and stops at the first sign of trouble, but any automation carries some risk to your account. Start with a small batch and check History before running large ones.",
   "rows.top": "Jump to top (Home)",
-  "rows.bottom": "Jump to bottom (End)"
+  "rows.bottom": "Jump to bottom (End)",
+  "cols.index": "#",
+  "cols.selected": "",
+  "cols.account": "Account",
+  "cols.name": "Name",
+  "cols.followers": "Followers",
+  "cols.inactive": "Inactive",
+  "cols.flags": "Flags"
 }

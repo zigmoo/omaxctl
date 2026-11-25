@@ -745,6 +745,31 @@ Item {
               text: strings.t("rows.count").arg(Commons.I18n.formatNumber(root.shownRows.length)) + "  ·  " + root.t("rows.legend") }
           }
 
+          // Column headers, aligned with the row cells below.
+          Row {
+            spacing: Style.space(8)
+            Repeater {
+              model: [
+                { key: "cols.index", width: 48, right: true },
+                { key: "cols.selected", width: 18, right: false },
+                { key: "cols.account", width: 170, right: false },
+                { key: "cols.name", width: 220, right: false },
+                { key: "cols.followers", width: 80, right: true },
+                { key: "cols.inactive", width: 90, right: true },
+                { key: "cols.flags", width: 90, right: false }
+              ]
+              Label {
+                required property var modelData
+                width: Style.space(modelData.width)
+                horizontalAlignment: modelData.right ? Text.AlignRight : Text.AlignLeft
+                color: root.dim
+                font.pixelSize: Style.font.caption
+                font.bold: true
+                text: root.t(modelData.key)
+              }
+            }
+          }
+
           ListView {
             id: list
             width: parent.width
@@ -755,6 +780,7 @@ Item {
             Controls.ScrollBar.vertical: BigScrollBar {}
             delegate: Column {
               required property var modelData
+              required property int index
               width: list.width
               readonly property bool open: root.expandedId === modelData.id
 
@@ -771,6 +797,8 @@ Item {
                 Row {
                   anchors.fill: parent
                   spacing: Style.space(8)
+                  Label { width: Style.space(48); horizontalAlignment: Text.AlignRight; color: root.dim; font.pixelSize: Style.font.caption
+                    text: Commons.I18n.formatNumber(index + 1) }
                   Label { width: Style.space(18); text: modelData.eligible ? "●" : "○"; color: modelData.eligible ? root.accent : root.dim; font.pixelSize: Style.font.caption }
                   Label { width: Style.space(170); text: "@" + modelData.handle; font.pixelSize: Style.font.caption }
                   Label { width: Style.space(220); text: modelData.name; color: root.dim; font.pixelSize: Style.font.caption }
@@ -783,7 +811,7 @@ Item {
               Column {
                 visible: parent.open
                 width: parent.width
-                leftPadding: Style.space(26)
+                leftPadding: Style.space(82)
                 spacing: Style.space(4)
                 Label { width: parent.width - Style.space(26); wrapMode: Text.Wrap; font.pixelSize: Style.font.caption; color: root.dim
                   text: strings.t("row.detail").arg(root.dateText(modelData.last_activity_at)).arg(root.t("evidence." + (modelData.evidence || "unknown")))
