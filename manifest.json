@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "moo.omaxctl",
+  "name": "OmaXCtl",
+  "version": "0.1.0",
+  "author": "Jason Benjamin Ziegler Sr",
+  "license": "Apache-2.0",
+  "description": "Audit the accounts you follow on X and prune inactive ones in paced, cancelable, backed-up batches through x_tool.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "OmaXCtl",
+    "description": "Audit and prune the accounts you follow on X",
+    "category": "Tools",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
