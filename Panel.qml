@@ -541,7 +541,7 @@ Item {
         }
 
         ButtonGroup {
-          options: [{ value: "accounts", label: root.t("tab.accounts") }, { value: "history", label: root.t("tab.history") }]
+          options: [{ value: "accounts", label: root.t("tab.accounts") }, { value: "history", label: root.t("tab.history") }, { value: "about", label: root.t("tab.about") }]
           value: root.tab
           onChanged: function(value) { root.tab = value; if (value === "history") root.refreshHistory() }
         }
@@ -747,6 +747,48 @@ Item {
                   spacing: Style.space(8)
                   Button { bordered: true; text: root.t("row.openProfile"); onClicked: Qt.openUrlExternally("https://x.com/" + modelData.handle) }
                   Button { bordered: true; text: modelData.kept ? root.t("row.unkeep") : root.t("row.keep"); onClicked: root.setKeep(modelData, !modelData.kept) }
+                }
+              }
+            }
+          }
+        }
+
+        // ---- About tab: what OmaXCtl and x_tool do, and how.
+        Flickable {
+          id: aboutTab
+          visible: root.tab === "about"
+          width: parent.width
+          height: body.height - y
+          clip: true
+          contentHeight: aboutColumn.implicitHeight
+          boundsBehavior: Flickable.StopAtBounds
+          Controls.ScrollBar.vertical: Controls.ScrollBar { policy: Controls.ScrollBar.AsNeeded }
+
+          Column {
+            id: aboutColumn
+            width: aboutTab.width - Style.space(18)
+            spacing: Style.space(6)
+            Repeater {
+              model: ["intro", "audit", "filters", "unfollow", "now", "safety", "history", "keys", "data", "risk"]
+              Column {
+                required property string modelData
+                width: aboutColumn.width
+                spacing: Style.space(2)
+                topPadding: modelData === "intro" ? 0 : Style.space(8)
+                Label {
+                  width: parent.width
+                  visible: modelData !== "intro"
+                  font.bold: true
+                  text: root.t("about." + modelData + ".title")
+                }
+                Label {
+                  width: parent.width
+                  wrapMode: Text.Wrap
+                  elide: Text.ElideNone
+                  color: modelData === "intro" ? root.fg : root.dim
+                  font.pixelSize: Style.font.body
+                  lineHeight: 1.15
+                  text: root.t("about." + modelData + ".body")
                 }
               }
             }
